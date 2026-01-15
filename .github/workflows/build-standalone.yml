@@ -27,8 +27,10 @@ jobs:
 
       - name: Build Docker image
         run: |
-          docker build -t ghcr.io/${{ github.repository_owner }}/matter-hub-standalone:latest .
+          IMAGE_NAME=ghcr.io/${{ github.repository_owner,, }}/matter-hub-standalone:latest
+          docker build -t $IMAGE_NAME .
 
       - name: Push Docker image
         run: |
-          docker push ghcr.io/${{ github.repository_owner }}/matter-hub-standalone:latest
+          IMAGE_NAME=ghcr.io/${{ github.repository_owner,, }}/matter-hub-standalone:latest
+          docker push $IMAGE_NAME
