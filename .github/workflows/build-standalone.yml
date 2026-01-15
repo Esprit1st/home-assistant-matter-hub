@@ -29,8 +29,8 @@ jobs:
         run: |
           OWNER=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
           IMAGE_NAME=ghcr.io/$OWNER/matter-hub-standalone:latest
-          docker build -t $IMAGE_NAME .
-
+          docker build -f docker/Dockerfile -t $IMAGE_NAME .
+          
       - name: Push Docker image
         run: |
           OWNER=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
