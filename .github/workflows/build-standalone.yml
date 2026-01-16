@@ -37,7 +37,7 @@ jobs:
           IMAGE_NAME=ghcr.io/$OWNER/matter-hub-standalone:latest
 
           docker buildx build \
-            --platform linux/amd64,linux/arm64,linux/arm/v7 \
+            --platform linux/amd64,linux/arm64 \
             -t $IMAGE_NAME \
             --push \
             .
