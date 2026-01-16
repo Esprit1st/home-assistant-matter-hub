@@ -18,8 +18,8 @@ RUN pnpm install --frozen-lockfile
 # Copy full repo
 COPY . .
 
-# Build ALL workspace packages (frontend, backend, common, app)
-RUN pnpm run build
+# Build all workspace packages EXCEPT documentation
+RUN pnpm -r --filter '!@home-assistant-matter-hub/documentation' run build
 
 # Expose Matter Hub port
 EXPOSE 5580
