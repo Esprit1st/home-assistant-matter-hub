@@ -1,20 +1,26 @@
-# Use a lightweight Node.js base image
-FROM node:20-alpine
+FROM node:22-alpine
 
-# Create app directory
+# Install pnpm
+RUN corepack enable && corepack prepare pnpm@10.20.0 --activate
+
 WORKDIR /app
 
-# Copy package files first (better caching)
-COPY package*.json ./
+# Copy only workspace files needed for dependency resolution
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+COPY apps/home-assistant-matter-hub/package.json apps/home-assistant-matter-hub/
+COPY packages ./packages
 
 # Install dependencies
-RUN npm install --production
+RUN pnpm install --frozen-lockfile
 
-# Copy the rest of the application
+# Copy the full repo
 COPY . .
 
-# Expose the default Matter Hub port (optional)
+# Build the Matter Hub app
+RUN pnpm --filter home-assistant-matter-hub run build
+
+# Expose the Matter Hub port (optional)
 EXPOSE 5580
 
-# Start the Matter Hub application
-CMD ["npm", "start"]
+# Run the CLI directly so flags pass through
+ENTRYPOINT ["node", "apps/home-assistant-matter-hub/dist/backend/cli.js", "start"]
