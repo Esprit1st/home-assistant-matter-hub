@@ -25,4 +25,4 @@ RUN pnpm -r --filter '!@home-assistant-matter-hub/documentation' run build
 EXPOSE 5580
 
 # Run the CLI directly
-ENTRYPOINT ["node", "dist/backend/cli.js", "start"]
+ENTRYPOINT ["node", "apps/home-assistant-matter-hub/dist/backend/cli.js", "start"]
