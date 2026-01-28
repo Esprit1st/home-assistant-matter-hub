@@ -48,11 +48,18 @@ export class ThermostatServerBase extends FeaturedBase {
   declare state: ThermostatServerBase.State;
 
   override async initialize() {
+    this.state.controlSequenceOfOperation =
+      this.features.cooling && this.features.heating
+        ? Thermostat.ControlSequenceOfOperation.CoolingAndHeating
+        : this.features.cooling
+          ? Thermostat.ControlSequenceOfOperation.CoolingOnly
+          : Thermostat.ControlSequenceOfOperation.HeatingOnly;
+
     await super.initialize();
 
     const homeAssistant = await this.agent.load(HomeAssistantEntityBehavior);
-
     this.update(homeAssistant.entity);
+
     this.reactTo(this.events.systemMode$Changed, this.systemModeChanged);
     if (this.features.cooling) {
       this.reactTo(
@@ -96,12 +103,6 @@ export class ThermostatServerBase extends FeaturedBase {
       localTemperature: localTemperature,
       systemMode: systemMode,
       thermostatRunningState: this.getRunningState(systemMode, runningMode),
-      controlSequenceOfOperation:
-        this.features.cooling && this.features.heating
-          ? Thermostat.ControlSequenceOfOperation.CoolingAndHeating
-          : this.features.cooling
-            ? Thermostat.ControlSequenceOfOperation.CoolingOnly
-            : Thermostat.ControlSequenceOfOperation.HeatingOnly,
       ...(this.features.heating
         ? {
             occupiedHeatingSetpoint: targetHeatingTemperature,
@@ -157,7 +158,7 @@ export class ThermostatServerBase extends FeaturedBase {
   private heatingSetpointChanged(
     value: number,
     _oldValue: number,
-    context: ActionContext,
+    context?: ActionContext,
   ) {
     if (transactionIsOffline(context)) {
       return;
@@ -176,7 +177,7 @@ export class ThermostatServerBase extends FeaturedBase {
   private coolingSetpointChanged(
     value: number,
     _oldValue: number,
-    context: ActionContext,
+    context?: ActionContext,
   ) {
     if (transactionIsOffline(context)) {
       return;
@@ -218,7 +219,7 @@ export class ThermostatServerBase extends FeaturedBase {
   private systemModeChanged(
     systemMode: Thermostat.SystemMode,
     _oldValue: Thermostat.SystemMode,
-    context: ActionContext,
+    context?: ActionContext,
   ) {
     if (transactionIsOffline(context)) {
       return;
